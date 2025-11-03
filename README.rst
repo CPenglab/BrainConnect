@@ -1,14 +1,14 @@
-Sp_Neuron - Neuronal Data Analysis Toolkit
+BrainConnect - Data Analysis Toolkit
 ===========================================
 
-A comprehensive toolkit for neuronal data analysis, featuring SWC file processing, feature extraction, multimodal data fusion, and machine learning model training.
+a flexible pipeline to integrate brain connectivity and spatial transcriptomics for downstream analysis
 
 Installation
 ------------
 
 .. code-block:: bash
 
-   pip install Sp_Neuron
+   pip install BrainConnect
 
 Quick Start
 -----------
@@ -17,16 +17,16 @@ Quick Start
 
    conda create -n neuron python=3.12
    conda activate neuron
-   pip install Sp_Neuron
+   pip install BrainConnect
 
 Help Documentation
 ------------------
 
 .. code-block:: bash
 
-   Sp_Neuron [-h] [-v] <command> ...
+   BrainConnect [-h] [-v] <command> ...
 
-Sp_Neuron - Complete neuronal data analysis workflow
+BrainConnect - Complete neuronal data analysis workflow
 
 ::
 
@@ -48,22 +48,22 @@ Complete workflow examples:
 .. code-block:: bash
 
    # 1. Download experimental data
-   Sp_Neuron download --experiments data/experiments.csv --download-dir data/experiment_data --annotation data/annotation_25.nrrd --limit 10
+   BrainConnect download --experiments data/experiments.csv --download-dir data/experiment_data --annotation data/annotation_25.nrrd --limit 10
 
    # 2. Preprocess experimental data
-   Sp_Neuron preprocess --experiments data/experiments.csv --download-dir data/experiment_data --annotation data/annotation_25.nrrd --output-dir data/experiment_data/result
+   BrainConnect preprocess --experiments data/experiments.csv --download-dir data/experiment_data --annotation data/annotation_25.nrrd --output-dir data/experiment_data/result
 
    # 3. Process SWC files
-   Sp_Neuron swc --annotation data/annotation_25.nrrd --input data/orig_swc_data/ --output results/swc_results.csv
+   BrainConnect swc --annotation data/annotation_25.nrrd --input data/orig_swc_data/ --output results/swc_results.csv
 
    # 4. Extract features
-   Sp_Neuron feature --swc-results results/swc_results.csv --adjacency data/adjacency_matrix.csv --output results/features.csv
+   BrainConnect feature --swc-results results/swc_results.csv --adjacency data/adjacency_matrix.csv --output results/features.csv
 
    # 5. Data fusion
-   Sp_Neuron fusion --features results/features.csv --experiment-results data/experiment_data/result/merged_results.csv --output results/fusion_results.csv
+   BrainConnect fusion --features results/features.csv --experiment-results data/experiment_data/result/merged_results.csv --output results/fusion_results.csv
 
    # 6. Train model
-   Sp_Neuron model --fusion-results results/fusion_results.csv --gene-data data/gene_data.csv --output results/gene_importance.csv
+   BrainConnect model --fusion-results results/fusion_results.csv --gene-data data/gene_data.csv --output results/gene_importance.csv
 
 Requirements:
 
@@ -79,7 +79,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron download [-h] --experiments EXPERIMENTS --download-dir DOWNLOAD_DIR --annotation ANNOTATION [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--limit LIMIT]
+      BrainConnect download [-h] --experiments EXPERIMENTS --download-dir DOWNLOAD_DIR --annotation ANNOTATION [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--limit LIMIT]
 
    ::
 
@@ -102,7 +102,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron download \
+      BrainConnect download \
         --experiments data/experiments.csv \
         --download-dir data/experiment_data \
         --annotation data/annotation_25.nrrd \
@@ -112,7 +112,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron preprocess [-h] --experiments EXPERIMENTS --download-dir DOWNLOAD_DIR --annotation ANNOTATION --output-dir OUTPUT_DIR [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--use-projection-density]
+      BrainConnect preprocess [-h] --experiments EXPERIMENTS --download-dir DOWNLOAD_DIR --annotation ANNOTATION --output-dir OUTPUT_DIR [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--use-projection-density]
 
    ::
 
@@ -137,7 +137,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron preprocess \
+      BrainConnect preprocess \
         --experiments data/experiments.csv \
         --download-dir data/experiment_data \
         --annotation data/annotation_25.nrrd \
@@ -147,7 +147,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron swc [-h] --annotation ANNOTATION --input INPUT --output OUTPUT [--resolution RESOLUTION] [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT]
+      BrainConnect swc [-h] --annotation ANNOTATION --input INPUT --output OUTPUT [--resolution RESOLUTION] [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT]
 
    ::
 
@@ -170,7 +170,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron swc \
+      BrainConnect swc \
         --annotation data/annotation_25.nrrd \
         --input data/orig_swc_data/ \
         --output results/swc_results.csv \
@@ -180,7 +180,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron feature [-h] --swc-results SWC_RESULTS --adjacency ADJACENCY --output OUTPUT [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--progress-file PROGRESS_FILE]
+      BrainConnect feature [-h] --swc-results SWC_RESULTS --adjacency ADJACENCY --output OUTPUT [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--progress-file PROGRESS_FILE]
 
    ::
 
@@ -203,7 +203,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron feature \
+      BrainConnect feature \
         --swc-results results/swc_results.csv \
         --adjacency data/adjacency_matrix.csv \
         --output results/features.csv
@@ -212,7 +212,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron fusion [-h] --features FEATURES --experiment-results EXPERIMENT_RESULTS --output OUTPUT [--adjacency ADJACENCY] [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--min-path-length MIN_PATH_LENGTH]
+      BrainConnect fusion [-h] --features FEATURES --experiment-results EXPERIMENT_RESULTS --output OUTPUT [--adjacency ADJACENCY] [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--min-path-length MIN_PATH_LENGTH]
 
    ::
 
@@ -237,7 +237,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron fusion \
+      BrainConnect fusion \
         --features results/features.csv \
         --experiment-results data/experiment_data/result/merged_results.csv \
         --output results/fusion_results.csv
@@ -246,7 +246,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron model [-h] --fusion-results FUSION_RESULTS --gene-data GENE_DATA --output OUTPUT [--acro-dict ACRO_DICT] [--window-size WINDOW_SIZE] [--epochs EPOCHS] [--batch-size BATCH_SIZE]
+      BrainConnect model [-h] --fusion-results FUSION_RESULTS --gene-data GENE_DATA --output OUTPUT [--acro-dict ACRO_DICT] [--window-size WINDOW_SIZE] [--epochs EPOCHS] [--batch-size BATCH_SIZE]
 
    ::
 
@@ -270,7 +270,7 @@ Step-by-Step Workflow
 
    .. code-block:: bash
 
-      Sp_Neuron model \
+      BrainConnect model \
         --fusion-results results/fusion_results.csv \
         --gene-data data/gene_data.csv \
         --output results/gene_importance.csv
@@ -293,7 +293,7 @@ Download Allen experimental data
 
 .. code-block:: bash
 
-   Sp_Neuron download --experiments <file> --download-dir <dir> --annotation <file> [--limit N]
+   BrainConnect download --experiments <file> --download-dir <dir> --annotation <file> [--limit N]
 
 preprocess
 ^^^^^^^^^^
@@ -301,7 +301,7 @@ Preprocess experimental data
 
 .. code-block:: bash
 
-   Sp_Neuron preprocess --experiments <file> --download-dir <dir> --annotation <file> --output-dir <dir>
+   BrainConnect preprocess --experiments <file> --download-dir <dir> --annotation <file> --output-dir <dir>
 
 swc
 ^^^
@@ -309,7 +309,7 @@ Process SWC files and analyze neuronal structures
 
 .. code-block:: bash
 
-   Sp_Neuron swc --annotation <file> --input <dir> --output <file> [--resolution 25]
+   BrainConnect swc --annotation <file> --input <dir> --output <file> [--resolution 25]
 
 feature
 ^^^^^^^
@@ -317,7 +317,7 @@ Extract and integrate neuronal features
 
 .. code-block:: bash
 
-   Sp_Neuron feature --swc-results <file> --adjacency <file> --output <file>
+   BrainConnect feature --swc-results <file> --adjacency <file> --output <file>
 
 fusion
 ^^^^^^
@@ -325,7 +325,7 @@ Perform multimodal data fusion
 
 .. code-block:: bash
 
-   Sp_Neuron fusion --features <file> --experiment-results <file> --output <file>
+   BrainConnect fusion --features <file> --experiment-results <file> --output <file>
 
 model
 ^^^^^
@@ -333,7 +333,7 @@ Train machine learning models and predict gene importance
 
 .. code-block:: bash
 
-   Sp_Neuron model --fusion-results <file> --gene-data <file> --output <file>
+   BrainConnect model --fusion-results <file> --gene-data <file> --output <file>
 
 File Structure
 --------------
@@ -362,7 +362,7 @@ Default configuration can be viewed using:
 
 .. code-block:: python
 
-   from Sp_Neuron import Config
+   from BrainConnect import Config
    Config.show_info()
 
 Dependencies
