@@ -622,10 +622,21 @@ class AllenDataFusion:
             # Check if already processed
             flag_path = os.path.join(output_dir, f"{exp_id}.COMPLETED")
             if os.path.exists(flag_path):
-                print(f"\n[{i+1}/{len(experiment_ids)}] Skipping already processed experiment {exp_id}")
-                skipped_count += 1
-                continue
-                
+                print(f"\n[{i+1}/{len(experiment_ids)}] Loading previously processed experiment {exp_id}")
+                # 读取已存在的结果文件
+                result_file = os.path.join(output_dir, f"{exp_id}_results.csv")
+                if os.path.exists(result_file):
+                    try:
+                        existing_result = pd.read_csv(result_file)
+                        all_results.extend(existing_result.to_dict('records'))
+                        successful_count += 1
+                        skipped_count += 1
+                        continue
+                    except Exception as e:
+                        print(f"Error reading existing result for {exp_id}: {e}")
+                else:
+                    print(f"Warning: Flag file exists but result file missing for {exp_id}")
+                    
             print(f"\n[{i+1}/{len(experiment_ids)}] Processing experiment {exp_id}")
             
             result = self.process_experiment_fast(

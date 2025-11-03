@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "BrainConnect"
+version = "1.0.0"
+
+dependencies = [
+    "pandas==2.2.3",
+    "numpy==2.2.4",
+    "tqdm==4.67.1",
+    "pyswcloader==1.1.1",
+    "pynrrd==1.1.3",
+    "networkx==3.5",
+    "tensorflow==2.20.0"
+]
+
+requires-python = ">=3.12"
+
+authors = [
+    {name = "CPenglab", email = "chengpeng@ynu.edu.cn"},
+    {name = "sparkumr", email = "1984607077@qq.com"}
+]
+maintainers = [
+    {name = "sparkumr", email = "1984607077@qq.com"}
+]
+
+description = "Single neuron SWC file processing, Allen fluorescence data processing, data integration and model construction"
+
+readme = "README.rst"
+
+license = {text = "GPLv3"}
+
+keywords = ["Neuron", "Allen", "Model"]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+
+[project.urls]
+Repository = "https://github.com/CPenglab/Neuron_Lstm"
+
+[project.scripts]
+BrainConnect = "BrainConnect.__main__:main"
+
+
