@@ -26,13 +26,13 @@ maintainers = [
     {name = "sparkumr", email = "1984607077@qq.com"}
 ]
 
-description = "Single neuron SWC file processing, Allen fluorescence data processing, data integration and model construction"
+description = "A flexible pipeline to integrate brain connectivity and spatial transcriptomics for downstream analysis"
 
 readme = "README.rst"
 
 license = {text = "GPLv3"}
 
-keywords = ["Neuron", "Allen", "Model"]
+keywords = ["Neuron", "Allen", "Model","Spatial Transcriptomics"]
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -45,7 +45,7 @@ classifiers = [
 
 
 [project.urls]
-Repository = "https://github.com/CPenglab/Neuron_Lstm"
+Repository = "https://github.com/CPenglab/BrainConnect"
 
 [project.scripts]
 BrainConnect = "BrainConnect.__main__:main"
