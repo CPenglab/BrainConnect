@@ -57,7 +57,7 @@ Complete workflow examples:
    BrainConnect swc --annotation data/annotation_25.nrrd --input data/orig_swc_data/ --output results/swc_results.csv
 
    # 4. Extract features
-   BrainConnect feature --swc-results results/swc_results.csv --adjacency data/adjacency_matrix.csv --output results/features.csv
+   BrainConnect feature --swc-results results/swc_results.csv --adjacency data/Mouse_brain_adjacency_matrix.csv --output results/features.csv
 
    # 5. Data fusion
    BrainConnect fusion --features results/features.csv --experiment-results data/experiment_data/result/merged_results.csv --output results/fusion_results.csv
@@ -205,7 +205,7 @@ Step-by-Step Workflow
 
       BrainConnect feature \
         --swc-results results/swc_results.csv \
-        --adjacency data/adjacency_matrix.csv \
+        --adjacency data/Mouse_brain_adjacency_matrix.csv \
         --output results/features.csv
 
 5. Data Fusion:
