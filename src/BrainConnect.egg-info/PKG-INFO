@@ -1,0 +1,408 @@
+Metadata-Version: 2.4
+Name: BrainConnect
+Version: 1.0.0
+Summary: A flexible pipeline to integrate brain connectivity and spatial transcriptomics for downstream analysis
+Author-email: CPenglab <chengpeng@ynu.edu.cn>, sparkumr <1984607077@qq.com>
+Maintainer-email: sparkumr <1984607077@qq.com>
+License: GPLv3
+Project-URL: Repository, https://github.com/CPenglab/BrainConnect
+Keywords: Neuron,Allen,Model,Spatial Transcriptomics
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Requires-Python: >=3.12
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: pandas==2.2.3
+Requires-Dist: numpy==2.2.4
+Requires-Dist: tqdm==4.67.1
+Requires-Dist: pyswcloader==1.1.1
+Requires-Dist: pynrrd==1.1.3
+Requires-Dist: networkx==3.5
+Requires-Dist: tensorflow==2.20.0
+Dynamic: license-file
+
+BrainConnect - Data Analysis Toolkit
+===========================================
+
+a flexible pipeline to integrate brain connectivity and spatial transcriptomics for downstream analysis
+
+Installation
+------------
+
+.. code-block:: bash
+
+   pip install BrainConnect
+
+Quick Start
+-----------
+
+.. code-block:: bash
+
+   conda create -n neuron python=3.12
+   conda activate neuron
+   pip install BrainConnect
+
+Help Documentation
+------------------
+
+.. code-block:: bash
+
+   BrainConnect [-h] [-v] <command> ...
+
+BrainConnect - Complete neuronal data analysis workflow
+
+::
+
+   options:
+     -h, --help     show this help message and exit
+     -v, --version  show program's version number and exit
+
+   Workflow commands:
+     <command>
+       download     Download Allen experimental data
+       preprocess   Preprocess experimental data
+       swc          SWC file processing and analysis
+       feature      Feature extraction and integration
+       fusion       Multimodal data fusion
+       model        Model training and prediction
+
+Complete workflow examples:
+
+.. code-block:: bash
+
+   # 1. Download experimental data
+   BrainConnect download --experiments data/experiments.csv --download-dir data/experiment_data --annotation data/annotation_25.nrrd --limit 10
+
+   # 2. Preprocess experimental data
+   BrainConnect preprocess --experiments data/experiments.csv --download-dir data/experiment_data --annotation data/annotation_25.nrrd --output-dir data/experiment_data/result
+
+   # 3. Process SWC files
+   BrainConnect swc --annotation data/annotation_25.nrrd --input data/orig_swc_data/ --output results/swc_results.csv
+
+   # 4. Extract features
+   BrainConnect feature --swc-results results/swc_results.csv --adjacency data/adjacency_matrix.csv --output results/features.csv
+
+   # 5. Data fusion
+   BrainConnect fusion --features results/features.csv --experiment-results data/experiment_data/result/merged_results.csv --output results/fusion_results.csv
+
+   # 6. Train model
+   BrainConnect model --fusion-results results/fusion_results.csv --gene-data data/gene_data.csv --output results/gene_importance.csv
+
+Requirements:
+
+- Python 3.12+
+- Dependencies: pandas, numpy, tensorflow, pyswcloader, networkx
+
+Version: 1.0.0
+
+Step-by-Step Workflow
+~~~~~~~~~~~~~~~~~~~~~
+
+1. Download Experimental Data:
+
+   .. code-block:: bash
+
+      BrainConnect download [-h] --experiments EXPERIMENTS --download-dir DOWNLOAD_DIR --annotation ANNOTATION [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--limit LIMIT]
+
+   ::
+
+      options:
+        -h, --help            show this help message and exit
+        --experiments EXPERIMENTS, -e EXPERIMENTS
+                              Experimental data file path
+        --download-dir DOWNLOAD_DIR
+                              Data download directory
+        --annotation ANNOTATION, -a ANNOTATION
+                              Brain annotation file path
+        --allen-tree ALLEN_TREE
+                              Allen brain tree file path
+        --acro-dict ACRO_DICT
+                              Acronym dictionary file path
+        --limit LIMIT, -n LIMIT
+                              Download quantity limit (0 means download all)
+
+   Example:
+
+   .. code-block:: bash
+
+      BrainConnect download \
+        --experiments data/experiments.csv \
+        --download-dir data/experiment_data \
+        --annotation data/annotation_25.nrrd \
+        --limit 10
+
+2. Preprocess Experimental Data:
+
+   .. code-block:: bash
+
+      BrainConnect preprocess [-h] --experiments EXPERIMENTS --download-dir DOWNLOAD_DIR --annotation ANNOTATION --output-dir OUTPUT_DIR [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--use-projection-density]
+
+   ::
+
+      options:
+        -h, --help            show this help message and exit
+        --experiments EXPERIMENTS, -e EXPERIMENTS
+                              Experimental data file path
+        --download-dir DOWNLOAD_DIR
+                              Data download directory
+        --annotation ANNOTATION, -a ANNOTATION
+                              Brain annotation file path
+        --output-dir OUTPUT_DIR
+                              Preprocessing results output directory
+        --allen-tree ALLEN_TREE
+                              Allen brain tree file path
+        --acro-dict ACRO_DICT
+                              Acronym dictionary file path
+        --use-projection-density
+                              Use projection density data
+
+   Example:
+
+   .. code-block:: bash
+
+      BrainConnect preprocess \
+        --experiments data/experiments.csv \
+        --download-dir data/experiment_data \
+        --annotation data/annotation_25.nrrd \
+        --output-dir data/experiment_data/result
+
+3. Process SWC Files:
+
+   .. code-block:: bash
+
+      BrainConnect swc [-h] --annotation ANNOTATION --input INPUT --output OUTPUT [--resolution RESOLUTION] [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT]
+
+   ::
+
+      options:
+        -h, --help            show this help message and exit
+        --annotation ANNOTATION, -a ANNOTATION
+                              Brain annotation file path
+        --input INPUT, -i INPUT
+                              Input SWC file directory path
+        --output OUTPUT, -o OUTPUT
+                              Output results file path
+        --resolution RESOLUTION, -r RESOLUTION
+                              Resolution parameter
+        --allen-tree ALLEN_TREE
+                              Allen brain tree file path
+        --acro-dict ACRO_DICT
+                              Acronym dictionary file path
+
+   Example:
+
+   .. code-block:: bash
+
+      BrainConnect swc \
+        --annotation data/annotation_25.nrrd \
+        --input data/orig_swc_data/ \
+        --output results/swc_results.csv \
+        --resolution 25
+
+4. Extract Features:
+
+   .. code-block:: bash
+
+      BrainConnect feature [-h] --swc-results SWC_RESULTS --adjacency ADJACENCY --output OUTPUT [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--progress-file PROGRESS_FILE]
+
+   ::
+
+      options:
+        -h, --help            show this help message and exit
+        --swc-results SWC_RESULTS, -s SWC_RESULTS
+                              SWC processing results file path
+        --adjacency ADJACENCY, -adj ADJACENCY
+                              Adjacency matrix file path
+        --output OUTPUT, -o OUTPUT
+                              Output features file path
+        --allen-tree ALLEN_TREE
+                              Allen brain tree file path
+        --acro-dict ACRO_DICT
+                              Acronym dictionary file path
+        --progress-file PROGRESS_FILE
+                              Progress save file path
+
+   Example:
+
+   .. code-block:: bash
+
+      BrainConnect feature \
+        --swc-results results/swc_results.csv \
+        --adjacency data/adjacency_matrix.csv \
+        --output results/features.csv
+
+5. Data Fusion:
+
+   .. code-block:: bash
+
+      BrainConnect fusion [-h] --features FEATURES --experiment-results EXPERIMENT_RESULTS --output OUTPUT [--adjacency ADJACENCY] [--allen-tree ALLEN_TREE] [--acro-dict ACRO_DICT] [--min-path-length MIN_PATH_LENGTH]
+
+   ::
+
+      options:
+        -h, --help            show this help message and exit
+        --features FEATURES, -f FEATURES
+                              Features file path
+        --experiment-results EXPERIMENT_RESULTS, -er EXPERIMENT_RESULTS
+                              Experimental data results file path
+        --output OUTPUT, -o OUTPUT
+                              Output fusion results file path
+        --adjacency ADJACENCY
+                              Adjacency matrix file path
+        --allen-tree ALLEN_TREE
+                              Allen brain tree file path
+        --acro-dict ACRO_DICT
+                              Acronym dictionary file path
+        --min-path-length MIN_PATH_LENGTH
+                              Minimum path length
+
+   Example:
+
+   .. code-block:: bash
+
+      BrainConnect fusion \
+        --features results/features.csv \
+        --experiment-results data/experiment_data/result/merged_results.csv \
+        --output results/fusion_results.csv
+
+6. Train Model:
+
+   .. code-block:: bash
+
+      BrainConnect model [-h] --fusion-results FUSION_RESULTS --gene-data GENE_DATA --output OUTPUT [--acro-dict ACRO_DICT] [--window-size WINDOW_SIZE] [--epochs EPOCHS] [--batch-size BATCH_SIZE]
+
+   ::
+
+      options:
+        -h, --help            show this help message and exit
+        --fusion-results FUSION_RESULTS, -f FUSION_RESULTS
+                              Data fusion results file path
+        --gene-data GENE_DATA, -g GENE_DATA
+                              Gene data file path
+        --output OUTPUT, -o OUTPUT
+                              Output gene importance file path
+        --acro-dict ACRO_DICT
+                              Acronym dictionary file path
+        --window-size WINDOW_SIZE
+                              Sliding window size
+        --epochs EPOCHS       Training epochs
+        --batch-size BATCH_SIZE
+                              Batch size
+
+   Example:
+
+   .. code-block:: bash
+
+      BrainConnect model \
+        --fusion-results results/fusion_results.csv \
+        --gene-data data/gene_data.csv \
+        --output results/gene_importance.csv
+
+Command Reference
+-----------------
+
+Global Options
+~~~~~~~~~~~~~~
+
+- ``-h, --help``: Show help message and exit
+- ``-v, --version``: Show program's version number and exit
+
+Available Commands
+~~~~~~~~~~~~~~~~~~
+
+download
+^^^^^^^^
+Download Allen experimental data
+
+.. code-block:: bash
+
+   BrainConnect download --experiments <file> --download-dir <dir> --annotation <file> [--limit N]
+
+preprocess
+^^^^^^^^^^
+Preprocess experimental data
+
+.. code-block:: bash
+
+   BrainConnect preprocess --experiments <file> --download-dir <dir> --annotation <file> --output-dir <dir>
+
+swc
+^^^
+Process SWC files and analyze neuronal structures
+
+.. code-block:: bash
+
+   BrainConnect swc --annotation <file> --input <dir> --output <file> [--resolution 25]
+
+feature
+^^^^^^^
+Extract and integrate neuronal features
+
+.. code-block:: bash
+
+   BrainConnect feature --swc-results <file> --adjacency <file> --output <file>
+
+fusion
+^^^^^^
+Perform multimodal data fusion
+
+.. code-block:: bash
+
+   BrainConnect fusion --features <file> --experiment-results <file> --output <file>
+
+model
+^^^^^
+Train machine learning models and predict gene importance
+
+.. code-block:: bash
+
+   BrainConnect model --fusion-results <file> --gene-data <file> --output <file>
+
+File Structure
+--------------
+
+Input Files
+~~~~~~~~~~~
+
+- ``annotation_25.nrrd``: Brain region annotation file
+- ``experiments.csv``: Experimental data metadata
+- ``adjacency_matrix.csv``: Brain region connectivity matrix
+- ``gene_data.csv``: Gene expression data
+- SWC files in organized directory structure
+
+Output Files
+~~~~~~~~~~~~
+
+- ``swc_results.csv``: Processed SWC file results
+- ``features.csv``: Extracted neuronal features
+- ``fusion_results.csv``: Fused multimodal data
+- ``gene_importance.csv``: Gene importance rankings
+
+Configuration
+-------------
+
+Default configuration can be viewed using:
+
+.. code-block:: python
+
+   from BrainConnect import Config
+   Config.show_info()
+
+Dependencies
+------------
+
+- Python 3.12+
+- pandas
+- numpy
+- tensorflow
+- pyswcloader
+- networkx
+
+Support
+-------
+
+For issues and questions, please contact: 1984607077@qq.com
