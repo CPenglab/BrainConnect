@@ -1,4 +1,4 @@
-BrainConnect - Data Analysis Toolkit   
+BrainConnect - Data Analysis Toolkit
 ===========================================
 
 a flexible pipeline to integrate brain connectivity and spatial transcriptomics for downstream analysis
