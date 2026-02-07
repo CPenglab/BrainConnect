@@ -22,7 +22,7 @@ class Config:
     def show_info(cls):
         """Display package information"""
         info = f"""
-Sp_Neuron Configuration Information:
+BrainConnect Configuration Information:
   Version: {__version__}
   Default Resolution: {cls.DEFAULT_RESOLUTION}
   Default Window Size: {cls.DEFAULT_WINDOW_SIZE}
