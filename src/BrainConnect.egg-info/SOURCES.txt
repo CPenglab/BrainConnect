@@ -1,0 +1,15 @@
+LICENSE
+README.rst
+pyproject.toml
+src/BrainConnect/__init__.py
+src/BrainConnect/__main__.py
+src/BrainConnect/data_fusion.py
+src/BrainConnect/feature_integrator.py
+src/BrainConnect/model.py
+src/BrainConnect/swc_processor.py
+src/BrainConnect.egg-info/PKG-INFO
+src/BrainConnect.egg-info/SOURCES.txt
+src/BrainConnect.egg-info/dependency_links.txt
+src/BrainConnect.egg-info/entry_points.txt
+src/BrainConnect.egg-info/requires.txt
+src/BrainConnect.egg-info/top_level.txt
