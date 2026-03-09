@@ -335,16 +335,13 @@ class SequenceDataProcessor:
         """
         return self.pca
 
-    def build_true_autoregressive_model_with_k(self, max_len, gene_embed_dim=64):
-        """Build autoregressive model with learnable error coefficient"""
-        # Use max_len-1 to create loss function
-        loss_function = self.create_adaptive_weighted_loss(max_len - 1)
-        
-        # Input layers
+    def build_true_autoregressive_model_with_k(max_len, gene_embed_dim=128):
+        "Construct an autoregressive model with a learnable error coefficient (using LSTM)"
+        # Input Layer
         gene_embed_input = tf.keras.Input(shape=(max_len, gene_embed_dim), name='gene_embed_input')
         init_strength_input = tf.keras.Input(shape=(1,), name='init_strength_input')
         
-        # ====== Enhanced gene embedding processing path (using PReLU) ======
+        # ====== Enhanced Gene Embedding Processing Path (Using PReLU) ======
         x = tf.keras.layers.TimeDistributed(
             tf.keras.layers.Dense(256, use_bias=True)
         )(gene_embed_input)
@@ -367,74 +364,67 @@ class SequenceDataProcessor:
         )(processed_gene_embed)
         # ===========================================
         
-        # Extract first time step's processed gene embedding information
+        # Extract the processed gene embedding information of the first time step
         first_gene_embed = tf.keras.layers.Lambda(lambda x: x[:, 0, :])(processed_gene_embed)
         second_and_third = tf.keras.layers.Lambda(lambda x: x[:, 1:, :])(processed_gene_embed)
         
-        # Concatenate initial strength and first gene embedding
+        # Merging the initial strength and the first gene embedding
         combined_init_input = tf.keras.layers.Concatenate(axis=-1)([init_strength_input, first_gene_embed])
         
-        # Create autoregressive RNN layer
-        autoregressive_cell = self.AutoregressiveCell(32)
-        rnn_layer = tf.keras.layers.RNN(
-            autoregressive_cell,
+        # Create an Autoregressive LSTM Layer
+        # Initialization state - Use the concatenated information (two states are required: h and c)
+        combined_dense = tf.keras.layers.Dense(64)(combined_init_input)
+        combined_dense = tf.keras.layers.PReLU()(combined_dense)
+        
+        # Generate the initial states (h and c) of the LSTM
+        initial_h = tf.keras.layers.Dense(32)(combined_dense)
+        initial_h = tf.keras.layers.PReLU()(initial_h)
+        
+        initial_c = tf.keras.layers.Dense(32)(combined_dense)
+        initial_c = tf.keras.layers.PReLU()(initial_c)
+        
+        # Use the LSTM layer (note: initial_state=[h, c] must be provided)
+        LSTM_output = tf.keras.layers.LSTM(
+            32,
             return_sequences=True,
             return_state=False,
             unroll=False
-        )
+        )(second_and_third, initial_state=[initial_h, initial_c])
         
-        # Initialize state - use concatenated information
-        h0 = tf.keras.layers.Dense(32)(combined_init_input)
-        # h0 = tf.keras.layers.PReLU()(h0)
-        c0 = tf.keras.layers.Dense(32)(combined_init_input)
-        # c0 = tf.keras.layers.PReLU()(c0)
-        initial_state = [h0, c0]
-        
-        # Run autoregressive RNN (using processed gene embeddings)
-        output = rnn_layer(
-            second_and_third,
-            initial_state=initial_state
-        )
-        
-        # Output processing - use Lambda layer to wrap TensorFlow operations
-        output = tf.keras.layers.Lambda(lambda x: tf.squeeze(x, axis=-1))(output)  # (batch_size, max_len)
+        # Output Processing - Add a fully connected layer to map the LSTM output to a single value
+        output = tf.keras.layers.Dense(1, activation=None)(LSTM_output)
+        output = tf.squeeze(output, axis=-1)  # (batch_size, max_len)
         
         # ====== Add learnable error coefficient k ======
-        # Create independent learnable coefficient k (initial value 1.0)
-        ones_vector = tf.keras.layers.Lambda(lambda x: tf.ones_like(x[:, :1]))(output)
+        # Create an independent learnable coefficient k (initial value set to 1.0)
         k = tf.keras.layers.Dense(
             1, 
             activation=None, 
             use_bias=False,
-            kernel_initializer='ones',  # Initialize to 1.0
+            kernel_initializer='ones',  # Initialized as 1.0
             name='error_coefficient'
-        )(ones_vector)  # Use unit vector with same batch size as output
+        )(tf.ones_like(output[:, :1]))  # Use unit vectors of the same batch size as the output
         
-        # Ensure k is scalar (but keep matching batch)
-        k = tf.keras.layers.Lambda(lambda x: tf.squeeze(x, axis=-1))(k)  # Now shape is (batch_size,)
+        # Ensure that k is a scalar (while maintaining batch compatibility)
+        k = tf.squeeze(k, axis=-1)  # Current shape is (batch_size,)
         
-        # Expand k to same shape as output
-        k_expanded = tf.keras.layers.Lambda(lambda x: tf.expand_dims(x, axis=1))(k)  # (batch_size, 1)
+        # Expand k to have the same shape as output
+        k_expanded = tf.expand_dims(k, axis=1)  # (batch_size, 1)
+        k_expanded = tf.tile(k_expanded, [1, tf.shape(output)[1]])  # (batch_size, max_len)
         
-        # Get output shape information for tile operation
-        output_shape = tf.keras.backend.int_shape(output)
-        k_expanded = tf.keras.layers.Lambda(
-            lambda x: tf.tile(x[0], [1, output_shape[1]])
-        )([k_expanded])  # (batch_size, max_len)
-        
-        # Apply error coefficient: final prediction = model output * k
+        # Application of error coefficient: Final prediction = Model output * k
         final_output = tf.keras.layers.Multiply()([output, k_expanded])
         
-        # Build model
+        # Build the Model
         model = tf.keras.Model(
             inputs=[gene_embed_input, init_strength_input],
             outputs=final_output
         )
         
-        # Compile model - use dynamically created loss function
+        # Compiled Model
         model.compile(
             optimizer=Adam(learning_rate=0.001),
-            loss=loss_function,  # Use dynamically created loss function
+            loss=adaptive_weighted_loss_3steps,
             metrics=['mae', tf.keras.metrics.MeanAbsolutePercentageError()]
         )
         
@@ -497,40 +487,6 @@ class SequenceDataProcessor:
             logs['val_r2'] = avg_r2
             for i, score in enumerate(r2_scores):
                 logs[f'val_r2_output_{i+1}'] = score
-
-    class AutoregressiveCell(tf.keras.layers.Layer):
-        """Custom autoregressive cell"""
-        def __init__(self, units, **kwargs):
-            super().__init__(**kwargs)
-            self.units = units
-            self.state_size = [units, units]  # [h_state, c_state]
-            self.output_size = 1  # Predict strength value
-            
-        def build(self, input_shape):
-            # Input shape: (batch_size, gene_embed_dim)
-            self.lstm_cell = tf.keras.layers.LSTMCell(self.units)
-            self.output_dense = tf.keras.layers.Dense(1, activation=custom_activation)
-            self.built = True
-            
-        @tf.autograph.experimental.do_not_convert
-        def call(self, inputs, states, training=None, **kwargs):
-            # Unpack states
-            h_state, c_state = states
-            
-            # Directly use gene embedding as input
-            lstm_input = inputs  # Shape: (batch_size, gene_embed_dim)
-            
-            # LSTM processing
-            lstm_output, [new_h, new_c] = self.lstm_cell(
-                lstm_input, 
-                [h_state, c_state],
-                training=training
-            )
-            
-            # Predict current strength
-            strength_pred = self.output_dense(lstm_output)
-            
-            return strength_pred, [new_h, new_c]
 
     def compute_gene_importance(self, model, dataset, target_timestep=-1, n_samples=100):
         """

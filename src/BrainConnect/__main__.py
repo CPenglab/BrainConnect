@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BrainConnect - a flexible pipeline to integrate brain connectivity and spatial transcriptomics for downstream analysis
+BrainConnect - a pipeline to process brain connectivity and spatial transcriptomics for integrative analysis
 Complete workflow command line interface
 """
 

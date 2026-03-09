@@ -1,8 +1,8 @@
 """
-BrainConnect - a flexible pipeline to integrate brain connectivity and spatial transcriptomics for downstream analysis
+BrainConnect - a pipeline to process brain connectivity and spatial transcriptomics for integrative analysis
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "sparkumr"
 __email__ = "1984607077@qq.com"
 
