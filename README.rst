@@ -258,6 +258,10 @@ Step-by-Step Workflow
                               Gene data file path
         --output OUTPUT, -o OUTPUT
                               Output gene importance file path
+        --output_model OUTPUT_MODEL, -O OUTPUT_MODEL
+                              Output model file path (optional)
+        --output_start_to_end_prediction OUTPUT_START_TO_END_PREDICTION, -p OUTPUT_START_TO_END_PREDICTION
+                              Output all dataset predictions from start to end (optional)                  
         --acro-dict ACRO_DICT
                               Acronym dictionary file path
         --window-size WINDOW_SIZE

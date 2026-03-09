@@ -161,7 +161,9 @@ def add_model_parser(subparsers):
     parser_model.add_argument('--window-size', type=int, default=5, help='Sliding window size')
     parser_model.add_argument('--epochs', type=int, default=50, help='Training epochs')
     parser_model.add_argument('--batch-size', type=int, default=32, help='Batch size')
-    
+    parser_model.add_argument('--output_model', '-O', default=None, help='Output model file path (optional)')
+    parser_model.add_argument('--output_start_to_end_prediction', '-p', default=None, help='Output all dataset predictions from start to end (optional)')
+
     parser_model.set_defaults(func=handle_model)
 
 # Command handler functions
@@ -474,12 +476,34 @@ def handle_model(args):
         callbacks=[r2_callback],
         verbose=1
     )
+
+    if args.output_model:
+        print(f"Saving model to: {args.output_model}")
+        model.save(args.output_model)
+        print("Model saved successfully!")
+    else:
+        print("Note: Model not saved (--output_model not specified)")
     
     # Calculate gene importance
     print("Calculating gene importance...")
     gene_all = np.concatenate([gene_train, gene_test], axis=0)
     init_strength_all = np.concatenate([init_strength_train, init_strength_test], axis=0)
-    
+    strength_shift_all = np.concatenate([strength_train_shift, strength_test_shift], axis=0)
+
+    if args.output_start_to_end_prediction:
+        print(f"Saving predictions to: {args.output_start_to_end_prediction}")
+        predictions = model.predict([gene_all, init_strength_all])
+        data_last_col = strength_shift_all[:, -1]  # last_col
+        predictions_last_col = predictions[:, -1]    # last_col
+        df_results = pd.DataFrame({
+            'data_last_column': data_last_col,
+            'predictions_last_column': predictions_last_col
+        })
+        df_results.to_csv(args.output_start_to_end_prediction, index=False)
+        print("Predictions saved successfully!")
+    else:
+        print("Note: Predictions not saved (--output_start_to_end_prediction not specified)")
+
     position_imp, dim_imp = processor.compute_gene_importance(
         model=model,
         dataset=(gene_all, init_strength_all),
@@ -495,6 +519,8 @@ def handle_model(args):
     # Save results
     gene_importance_df.to_csv(args.output, index=False)
     print(f"Gene importance results saved to: {args.output}")
+
+
 
 if __name__ == "__main__":
     main()
