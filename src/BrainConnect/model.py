@@ -14,14 +14,6 @@ import networkx as nx
 from tqdm import tqdm
 import os
 
-
-# Custom activation function (according to your actual definition)
-def custom_activation(x):
-    """Improved activation function allowing small range negative outputs"""
-    return tf.where(x < 0, 
-                  1 * tf.nn.softplus(x),  # Maintain tiny positive values for deep negatives
-                  tf.nn.softplus(x))          # Normal positive response
-
 class SequenceDataProcessor:
 
     def __init__(self, stl_acro_dict, gene_filled_result_path):
